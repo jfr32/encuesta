@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Encuesta IIO | Ingeniería en Informática Organizacional</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #eef2f7;
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            padding: 2rem 1rem;
+            color: #1a2c3e;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.1);
+            padding: 2rem 1.8rem;
+        }
+
+        .header {
+            border-bottom: 3px solid #2c7da0;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 1.9rem;
+            color: #0b3b4f;
+            margin-bottom: 0.75rem;
+        }
+
+        .sub {
+            background: #e9f0f5;
+            padding: 1rem 1.2rem;
+            border-radius: 24px;
+            margin: 1.5rem 0;
+            border-left: 6px solid #2c7da0;
+        }
+
+        .scale-guide {
+            background: #f8fafc;
+            padding: 0.7rem 1rem;
+            border-radius: 28px;
+            margin: 1.5rem 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Estilos para el campo nombre */
+        .nombre-field {
+            margin: 1rem 0 1.5rem 0;
+            padding: 0.8rem;
+            background: #f9fbfd;
+            border-radius: 28px;
+            border: 1px solid #cde3ed;
+        }
+        .nombre-field label {
+            font-weight: 700;
+            display: block;
+            margin-bottom: 8px;
+        }
+        .nombre-field input {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 1rem;
+            border-radius: 40px;
+            border: 1px solid #cbdbe0;
+            font-family: inherit;
+        }
+        .nombre-field input:focus {
+            outline: none;
+            border-color: #2c7da0;
+            box-shadow: 0 0 0 2px rgba(44,125,160,0.2);
+        }
+        .error-nombre {
+            color: #d32f2f;
+            font-size: 0.75rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .options-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 8px;
+        }
+
+        .option {
+            width: 36px;
+            text-align: center;
+            background: #f9fbfd;
+            border-radius: 36px;
+            padding: 4px 0;
+            border: 1px solid #dce5ec;
+            cursor: pointer;
+        }
+
+        input[type="radio"] {
+            display: none;
+        }
+
+        .option label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            color: #1f3b47;
+        }
+
+        input[type="radio"]:checked + label {
+            background: #2c7da0;
+            color: white;
+            border-radius: 36px;
+            padding: 4px 0;
+            margin: -4px 0;
+        }
+
+        .question-card {
+            background: #ffffff;
+            border-radius: 20px;
+            margin-bottom: 1rem;
+            padding: 0.9rem 1rem 0.7rem;
+            border: 1px solid #e2edf2;
+        }
+
+        .question-text {
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 0.6rem;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .q-num {
+            background: #eef2fa;
+            color: #1f5e7a;
+            border-radius: 30px;
+            padding: 2px 12px;
+            font-size: 0.8rem;
+        }
+
+        .open-question {
+            margin: 2rem 0 1.5rem;
+            background: #fafeff;
+            border-radius: 28px;
+            padding: 1.2rem;
+            border: 1px solid #cde3ed;
+        }
+
+        textarea {
+            width: 100%;
+            border-radius: 24px;
+            border: 1px solid #cbdbe0;
+            padding: 12px 16px;
+            margin-top: 12px;
+            resize: vertical;
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+
+        .btn {
+            border: none;
+            padding: 10px 24px;
+            border-radius: 60px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: #2c7da0;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #eef2f5;
+            color: #2c5a6e;
+            border: 1px solid #bdd3df;
+        }
+
+        .footnote {
+            font-size: 0.7rem;
+            text-align: center;
+            margin-top: 2rem;
+            color: #5e7e91;
+        }
+
+        @media (max-width: 640px) {
+            .container { padding: 1rem; }
+            .option { width: 32px; }
+            .title-area h1 { font-size: 1.3rem; }
+        }
+
+        .toast-msg {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e2f3a;
+            color: white;
+            padding: 8px 18px;
+            border-radius: 60px;
+            font-size: 0.8rem;
+            opacity: 0;
+            transition: 0.2s;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>📊 Encuesta para evaluar la necesidad<br>de un nuevo perfil profesional:<br>Ingeniería en Informática Organizacional (IIO)</h1>
+        <div class="sub">
+            <strong>🎯 Objetivo:</strong> Evaluar si en su organización existe una necesidad real y no cubierta de un perfil que integre ingeniería de software, procesos organizacionales y ciencia de datos.<br>
+            Actualmente, los perfiles tradicionales abordan dimensiones separadas, generando brechas como desalineación negocio-tecnología, proyectos fallidos y dificultades para la transformación digital.
+        </div>
+    </div>
+
+    <div class="scale-guide">
+        <span>1️⃣ Nunca / Total desacuerdo</span>
+        <span>2️⃣ Rara vez</span>
+        <span>3️⃣ A veces / Neutral</span>
+        <span>4️⃣ Frecuentemente / De acuerdo</span>
+        <span>5️⃣ Siempre / Total acuerdo</span>
+    </div>
+
+    <!-- NUEVO CAMPO: NOMBRE COMPLETO -->
+    <div class="nombre-field">
+        <label>👤 Nombre completo (opcional pero recomendado):</label>
+        <input type="text" id="nombreCompleto" name="nombre_completo" autocomplete="off">
+        <div class="error-nombre" id="errorNombre">Solo se permiten letras y espacios. Cada palabra debe iniciar con mayúscula.</div>
+    </div>
+
+    <!-- Formulario con action de Formspree (sustituye TU_ENDPOINT_AQUI) -->
+    <form id="surveyForm" method="POST" action="https://formspree.io/f/mwvzjkqk">
+        <input type="hidden" name="_subject" value="Nueva respuesta Encuesta IIO">
+
+        <div id="questionsContainer" class="questions-area"></div>
+
+        <div class="open-question">
+            <label style="font-weight: 700;">23. 📝 ¿Qué otro problema de integración ha experimentado?</label>
+            <textarea id="openAnswer" name="respuesta_abierta" rows="3"></textarea>
+        </div>
+
+        <div class="button-group">
+            <button type="submit" class="btn btn-primary">✅ Enviar respuestas</button>
+            <button type="button" class="btn btn-secondary" id="resetBtn">🔄 Limpiar</button>
+        </div>
+    </form>
+
+    <div class="footnote">
+        🔍 Datos anónimos con fines académicos. Al enviar, recibirás un resumen y los datos llegarán al investigador.
+    </div>
+</div>
+<div id="toastMsg" class="toast-msg"></div>
+
+<script>
+    // ---------- 22 PREGUNTAS ----------
+    const questionsList = [
+        "Existe una brecha de comunicación entre el equipo de TI y los gerentes de procesos.",
+        "Los proyectos de informatización se enfocan más en la herramienta que en el flujo de trabajo.",
+        "Contamos con un profesional que rediseñe procesos y especifique la arquitectura de software.",
+        "Alguna implementación ha fallado por no considerar el factor humano o la cultura organizacional.",
+        "Nuestros ingenieros industriales dominan herramientas avanzadas de desarrollo de software.",
+        "Nuestros informáticos comprenden a profundidad los indicadores económicos del negocio.",
+        "Es difícil integrar los grandes volúmenes de datos en una estrategia única de decisiones.",
+        "La transformación digital se ha limitado a digitalizar papeles sin cambiar la lógica del negocio.",
+        "Dificultad para alinear inversiones en tecnología con objetivos estratégicos.",
+        "Existe alguien que lidere éticamente la adopción de IA evaluando sesgos y riesgos.",
+        "Nuestros sistemas son islas tecnológicas que no se comunican entre departamentos.",
+        "Se adquieren soluciones tecnológicas que el personal no sabe o no quiere usar.",
+        "Perdemos competitividad por no tener procesos adaptables a cambios tecnológicos.",
+        "Hay un responsable de vigilar tendencias tecnológicas y evaluar su impacto económico.",
+        "Nuestros analistas de datos explican el ROI de sus hallazgos a la junta directiva.",
+        "Es difícil encontrar un profesional que entienda de ciberseguridad y continuidad del negocio.",
+        "Nuestros procesos están optimizados digitalmente para la Industria 4.0.",
+        "Contamos con plan de formación continua para adaptarse al cambio tecnológico.",
+        "Nuestros ingenieros pueden modelar sistemas sociotécnicos (personas, máquinas, software).",
+        "La toma de decisiones se basa en datos en tiempo real (no reportes manuales).",
+        "Hemos tenido que contratar consultores externos para arquitectura empresarial.",
+        "Una carrera que una gestión, procesos e informática resolvería problemas actuales."
+    ];
+
+    // Función para capitalizar cada palabra (primera letra mayúscula, resto minúsculas)
+    function toTitleCase(str) {
+        return str.toLowerCase().split(' ').map(word => {
+            if (word.length === 0) return word;
+            return word.charAt(0).toUpperCase() + word.slice(1);
+        }).join(' ');
+    }
+
+    // Validar que el nombre solo contenga letras, espacios y algunos acentos básicos (opcional)
+    function isValidName(name) {
+        // Permite letras (incluyendo acentos), espacios y guiones (opcional)
+        // Si quieres solo letras sin acentos, usa /^[A-Za-z\s]+$/
+        const regex = /^[A-Za-záéíóúüñÁÉÍÓÚÜÑ\s]+$/;
+        return regex.test(name);
+    }
+
+    // Formatear y validar en tiempo real
+    const nombreInput = document.getElementById('nombreCompleto');
+    const errorDiv = document.getElementById('errorNombre');
+
+    function formatAndValidate() {
+        let value = nombreInput.value;
+        // Eliminar espacios múltiples al inicio/final y reducir espacios entre palabras
+        value = value.trim().replace(/\s+/g, ' ');
+        // Validar caracteres
+        if (value && !isValidName(value)) {
+            errorDiv.style.display = 'block';
+            nombreInput.style.borderColor = '#d32f2f';
+        } else {
+            errorDiv.style.display = 'none';
+            nombreInput.style.borderColor = '#cbdbe0';
+        }
+        // Aplicar formato título (sin forzar mientras escribe, pero al salir del campo)
+        return value;
+    }
+
+    nombreInput.addEventListener('blur', function() {
+        let value = this.value.trim();
+        if (value) {
+            if (!isValidName(value)) {
+                // Si es inválido, mostramos error y no aplicamos formato
+                errorDiv.style.display = 'block';
+                this.style.borderColor = '#d32f2f';
+            } else {
+                // Aplicar título
+                this.value = toTitleCase(value);
+                errorDiv.style.display = 'none';
+                this.style.borderColor = '#cbdbe0';
+            }
+        } else {
+            errorDiv.style.display = 'none';
+            this.style.borderColor = '#cbdbe0';
+        }
+    });
+
+    // También al escribir, ocultar error cuando se empiece a corregir
+    nombreInput.addEventListener('input', function() {
+        let val = this.value;
+        if (val && !isValidName(val)) {
+            errorDiv.style.display = 'block';
+            this.style.borderColor = '#d32f2f';
+        } else {
+            errorDiv.style.display = 'none';
+            this.style.borderColor = '#cbdbe0';
+        }
+    });
+
+    // Renderizar preguntas con nombres numéricos
+    function renderQuestions() {
+        const container = document.getElementById('questionsContainer');
+        container.innerHTML = '';
+        questionsList.forEach((text, idx) => {
+            const qNum = idx + 1;
+            const div = document.createElement('div');
+            div.className = 'question-card';
+            div.innerHTML = `
+                <div class="question-text"><span class="q-num">${qNum}</span> ${text}</div>
+                <div class="options-row" id="opts-${qNum}"></div>
+            `;
+            container.appendChild(div);
+            const optsRow = div.querySelector(`.options-row`);
+            for (let val = 1; val <= 5; val++) {
+                const opt = document.createElement('div');
+                opt.className = 'option';
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = `pregunta_${qNum}`;
+                radio.value = val;
+                radio.id = `p${qNum}_${val}`;
+                const label = document.createElement('label');
+                label.htmlFor = `p${qNum}_${val}`;
+                label.textContent = val;
+                opt.appendChild(radio);
+                opt.appendChild(label);
+                optsRow.appendChild(opt);
+            }
+        });
+    }
+
+    // Recoger respuestas (incluyendo nombre)
+    function collectAnswers() {
+        const answers = {};
+        let answered = 0;
+        for (let i = 1; i <= questionsList.length; i++) {
+            const radios = document.getElementsByName(`pregunta_${i}`);
+            let selected = null;
+            for (let r of radios) {
+                if (r.checked) {
+                    selected = parseInt(r.value);
+                    answered++;
+                    break;
+                }
+            }
+            answers[`pregunta_${i}`] = selected;
+        }
+        answers.abierta = document.getElementById('openAnswer')?.value || '';
+        answers.nombre = nombreInput.value.trim() || 'Anónimo';
+        answers.total_respondidas = answered;
+        answers.total_preguntas = questionsList.length;
+        return answers;
+    }
+
+    function showToast(msg) {
+        const t = document.getElementById('toastMsg');
+        t.textContent = msg;
+        t.style.opacity = 1;
+        setTimeout(() => t.style.opacity = 0, 3000);
+    }
+
+    // Manejar envío: validar nombre (si se ingresó, debe ser válido)
+    const form = document.getElementById('surveyForm');
+    form.addEventListener('submit', function(event) {
+        const nombreVal = nombreInput.value.trim();
+        if (nombreVal !== "" && !isValidName(nombreVal)) {
+            event.preventDefault();
+            errorDiv.style.display = 'block';
+            showToast("❌ El nombre contiene caracteres no permitidos. Use solo letras y espacios.", 4000);
+            return;
+        }
+        
+        const resp = collectAnswers();
+        let resumen = `Nombre: ${resp.nombre}\nRespondidas: ${resp.total_respondidas}/${resp.total_preguntas}\n`;
+        for (let i = 1; i <= questionsList.length; i++) {
+            let val = resp[`pregunta_${i}`] !== null ? resp[`pregunta_${i}`] : '❌';
+            resumen += `${i}: ${val} - ${questionsList[i-1].substring(0,50)}...\n`;
+        }
+        resumen += `\nAbierta: ${resp.abierta || '(vacío)'}`;
+
+        if (!confirm("📋 ¿Copiar este resumen al portapapeles antes de enviar?\n\n(Si aceptas, se copiará y luego se enviará la encuesta)")) {
+            event.preventDefault();
+            return;
+        }
+        navigator.clipboard.writeText(resumen).then(() => showToast("Resumen copiado", 2000));
+        showToast("Enviando respuestas...", 1500);
+        localStorage.setItem('encuestaIIO_backup', JSON.stringify(resp));
+        // El formulario se envía normalmente a Formspree
+    });
+
+    // Limpiar formulario
+    document.getElementById('resetBtn').addEventListener('click', () => {
+        for (let i = 1; i <= questionsList.length; i++) {
+            document.getElementsByName(`pregunta_${i}`).forEach(r => r.checked = false);
+        }
+        document.getElementById('openAnswer').value = '';
+        nombreInput.value = '';
+        errorDiv.style.display = 'none';
+        localStorage.removeItem('encuestaIIO_backup');
+        showToast("Formulario limpiado");
+    });
+
+    // Auto-guardado y restauración
+    function autoSave() {
+        const data = collectAnswers();
+        localStorage.setItem('encuestaIIO_backup', JSON.stringify(data));
+    }
+    document.addEventListener('change', autoSave);
+    function restoreBackup() {
+        const saved = localStorage.getItem('encuestaIIO_backup');
+        if (!saved) return;
+        try {
+            const data = JSON.parse(saved);
+            for (let i = 1; i <= questionsList.length; i++) {
+                const val = data[`pregunta_${i}`];
+                if (val) {
+                    const radio = document.querySelector(`input[name="pregunta_${i}"][value="${val}"]`);
+                    if (radio) radio.checked = true;
+                }
+            }
+            if (data.abierta) document.getElementById('openAnswer').value = data.abierta;
+            if (data.nombre && data.nombre !== 'Anónimo') nombreInput.value = data.nombre;
+            showToast("Respuestas previas restauradas");
+        } catch(e) {}
+    }
+
+    renderQuestions();
+    setTimeout(restoreBackup, 100);
+</script>
+</body>
+</html>
