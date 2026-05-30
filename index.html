@@ -60,7 +60,6 @@
             font-weight: 600;
         }
 
-        /* Estilos para el campo nombre */
         .nombre-field {
             margin: 1rem 0 1.5rem 0;
             padding: 0.8rem;
@@ -206,66 +205,24 @@
             color: #5e7e91;
         }
 
-        /* ========== MEJORAS PARA MÓVIL ========== */
         @media (max-width: 640px) {
-            .container {
-                padding: 1rem;
-            }
-            h1 {
-                font-size: 1.4rem;
-            }
-            .sub {
-                font-size: 0.85rem;
-                padding: 0.8rem;
-            }
-            /* Escala guía más compacta */
-            .scale-guide {
-                font-size: 0.65rem;
-                gap: 5px;
-                padding: 0.5rem;
-                justify-content: center;
-            }
-            /* Cuadritos más pequeños y con menos separación */
-            .options-row {
-                gap: 0.4rem;
-            }
-            .option {
-                width: 30px;
-                padding: 3px 0;
-            }
-            .option label {
-                font-size: 0.75rem;
-            }
-            input[type="radio"]:checked + label {
-                padding: 3px 0;
-                margin: -3px 0;
-            }
-            /* Texto de las preguntas ligeramente más pequeño */
-            .question-text {
-                font-size: 0.85rem;
-            }
-            .q-num {
-                font-size: 0.7rem;
-                padding: 2px 8px;
-            }
-            /* Botones más compactos */
-            .btn {
-                padding: 8px 18px;
-                font-size: 0.8rem;
-            }
+            .container { padding: 1rem; }
+            h1 { font-size: 1.4rem; }
+            .sub { font-size: 0.85rem; padding: 0.8rem; }
+            .scale-guide { font-size: 0.65rem; gap: 5px; padding: 0.5rem; justify-content: center; }
+            .options-row { gap: 0.4rem; }
+            .option { width: 30px; padding: 3px 0; }
+            .option label { font-size: 0.75rem; }
+            input[type="radio"]:checked + label { padding: 3px 0; margin: -3px 0; }
+            .question-text { font-size: 0.85rem; }
+            .q-num { font-size: 0.7rem; padding: 2px 8px; }
+            .btn { padding: 8px 18px; font-size: 0.8rem; }
         }
 
-        /* Pantallas muy pequeñas (menos de 480px) */
         @media (max-width: 480px) {
-            .option {
-                width: 28px;
-            }
-            .option label {
-                font-size: 0.7rem;
-            }
-            .options-row {
-                gap: 0.3rem;
-            }
+            .option { width: 28px; }
+            .option label { font-size: 0.7rem; }
+            .options-row { gap: 0.3rem; }
         }
 
         .toast-msg {
@@ -281,6 +238,7 @@
             opacity: 0;
             transition: 0.2s;
             pointer-events: none;
+            z-index: 1000;
         }
     </style>
 </head>
@@ -294,9 +252,7 @@
         </div>
     </div>
     <div class="sub">
-        <h2>
-            Instrucciones:  Para cada afirmación, marque un nivel del 1-5 según la siguiente escala:
-        </h2>
+        <h2>Instrucciones: Para cada afirmación, marque un nivel del 1-5 según la siguiente escala:</h2>
     </div>
 
     <div class="scale-guide">
@@ -307,16 +263,18 @@
         <span>5️⃣ Siempre / Total acuerdo</span>
     </div>
 
-    <!-- NUEVO CAMPO: NOMBRE COMPLETO -->
+    <!-- CAMPO NOMBRE COMPLETO -->
     <div class="nombre-field">
         <label>👤 Nombre completo (opcional pero recomendado):</label>
         <input type="text" id="nombreCompleto" name="nombre_completo" autocomplete="off" >
         <div class="error-nombre" id="errorNombre">Solo se permiten letras y espacios. Cada palabra debe iniciar con mayúscula.</div>
     </div>
 
-    <!-- Formulario con action de Formspree (tu endpoint ya está) -->
+    <!-- Formulario Formspree -->
     <form id="surveyForm" method="POST" action="https://formspree.io/f/mwvzjkqk">
-        <input type="hidden" name="_subject" value="Nueva respuesta Encuesta IIO">
+        <input type="hidden" name="_subject" id="subjectField" value="Nueva respuesta Encuesta IIO">
+        <input type="hidden" name="nombre_usuario" id="nombreOculto" value="">
+
         <div id="questionsContainer" class="questions-area"></div>
 
         <div class="open-question">
@@ -329,16 +287,11 @@
             <button type="button" class="btn btn-secondary" id="resetBtn">🔄 Limpiar</button>
         </div>
     </form>
-
-    <!-- El pie de página está comentado en tu original, lo dejo así -->
-    <!-- <div class="footnote">
-        🔍 Datos anónimos con fines académicos. Al enviar, recibirás un resumen y los datos llegarán al investigador.
-    </div> -->
 </div>
 <div id="toastMsg" class="toast-msg"></div>
 
 <script>
-    // ---------- 22 PREGUNTAS (sin cambios) ----------
+    // ---------- 22 PREGUNTAS ----------
     const questionsList = [
         "Existe una brecha de comunicación entre el equipo de TI y los gerentes de procesos.",
         "Los proyectos de informatización se enfocan más en la herramienta que en el flujo de trabajo.",
@@ -364,8 +317,9 @@
         "Una carrera que una gestión, procesos e informática resolvería problemas actuales."
     ];
 
-    // Función para capitalizar cada palabra
+    // Capitalizar cada palabra
     function toTitleCase(str) {
+        if (!str) return '';
         return str.toLowerCase().split(' ').map(word => {
             if (word.length === 0) return word;
             return word.charAt(0).toUpperCase() + word.slice(1);
@@ -381,6 +335,7 @@
     const nombreInput = document.getElementById('nombreCompleto');
     const errorDiv = document.getElementById('errorNombre');
 
+    // Al perder foco: validar y aplicar formato título
     nombreInput.addEventListener('blur', function() {
         let value = this.value.trim();
         if (value) {
@@ -398,6 +353,7 @@
         }
     });
 
+    // Validación en tiempo real mientras escribe
     nombreInput.addEventListener('input', function() {
         let val = this.value;
         if (val && !isValidName(val)) {
@@ -441,6 +397,7 @@
         });
     }
 
+    // Recoger respuestas (para resumen y backup)
     function collectAnswers() {
         const answers = {};
         let answered = 0;
@@ -473,13 +430,26 @@
     const form = document.getElementById('surveyForm');
     form.addEventListener('submit', function(event) {
         const nombreVal = nombreInput.value.trim();
+        // Validar nombre si se ingresó
         if (nombreVal !== "" && !isValidName(nombreVal)) {
             event.preventDefault();
             errorDiv.style.display = 'block';
             showToast("❌ El nombre contiene caracteres no permitidos. Use solo letras y espacios.", 4000);
             return;
         }
-        
+
+        // Nombre final (con formato título o 'Anónimo')
+        const nombreFinal = nombreVal ? toTitleCase(nombreVal) : 'Anónimo';
+        // Asignar al campo oculto para que Formspree lo muestre claramente
+        const nombreOculto = document.getElementById('nombreOculto');
+        if (nombreOculto) nombreOculto.value = nombreFinal;
+
+        // Personalizar el asunto del correo con el nombre
+        const subjectField = document.getElementById('subjectField');
+        if (subjectField) {
+            subjectField.value = `Encuesta IIO - Respuesta de ${nombreFinal}`;
+        }
+
         const resp = collectAnswers();
         let resumen = `Nombre: ${resp.nombre}\nRespondidas: ${resp.total_respondidas}/${resp.total_preguntas}\n`;
         for (let i = 1; i <= questionsList.length; i++) {
@@ -498,6 +468,7 @@
         // El formulario se envía normalmente a Formspree
     });
 
+    // Limpiar formulario
     document.getElementById('resetBtn').addEventListener('click', () => {
         for (let i = 1; i <= questionsList.length; i++) {
             document.getElementsByName(`pregunta_${i}`).forEach(r => r.checked = false);
@@ -509,6 +480,7 @@
         showToast("Formulario limpiado");
     });
 
+    // Auto‑guardado y restauración
     function autoSave() {
         const data = collectAnswers();
         localStorage.setItem('encuestaIIO_backup', JSON.stringify(data));
