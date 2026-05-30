@@ -206,10 +206,66 @@
             color: #5e7e91;
         }
 
+        /* ========== MEJORAS PARA MÓVIL ========== */
         @media (max-width: 640px) {
-            .container { padding: 1rem; }
-            .option { width: 32px; }
-            .title-area h1 { font-size: 1.3rem; }
+            .container {
+                padding: 1rem;
+            }
+            h1 {
+                font-size: 1.4rem;
+            }
+            .sub {
+                font-size: 0.85rem;
+                padding: 0.8rem;
+            }
+            /* Escala guía más compacta */
+            .scale-guide {
+                font-size: 0.65rem;
+                gap: 5px;
+                padding: 0.5rem;
+                justify-content: center;
+            }
+            /* Cuadritos más pequeños y con menos separación */
+            .options-row {
+                gap: 0.4rem;
+            }
+            .option {
+                width: 30px;
+                padding: 3px 0;
+            }
+            .option label {
+                font-size: 0.75rem;
+            }
+            input[type="radio"]:checked + label {
+                padding: 3px 0;
+                margin: -3px 0;
+            }
+            /* Texto de las preguntas ligeramente más pequeño */
+            .question-text {
+                font-size: 0.85rem;
+            }
+            .q-num {
+                font-size: 0.7rem;
+                padding: 2px 8px;
+            }
+            /* Botones más compactos */
+            .btn {
+                padding: 8px 18px;
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Pantallas muy pequeñas (menos de 480px) */
+        @media (max-width: 480px) {
+            .option {
+                width: 28px;
+            }
+            .option label {
+                font-size: 0.7rem;
+            }
+            .options-row {
+                gap: 0.3rem;
+            }
         }
 
         .toast-msg {
@@ -241,7 +297,6 @@
         <h2>
             Instrucciones:  Para cada afirmación, marque un nivel del 1-5 según la siguiente escala:
         </h2>
-
     </div>
 
     <div class="scale-guide">
@@ -255,14 +310,13 @@
     <!-- NUEVO CAMPO: NOMBRE COMPLETO -->
     <div class="nombre-field">
         <label>👤 Nombre completo (opcional pero recomendado):</label>
-        <input type="text" id="nombreCompleto" name="nombre_completo" autocomplete="off">
+        <input type="text" id="nombreCompleto" name="nombre_completo" autocomplete="off" placeholder="Ej: Juan Carlos Pérez">
         <div class="error-nombre" id="errorNombre">Solo se permiten letras y espacios. Cada palabra debe iniciar con mayúscula.</div>
     </div>
 
-    <!-- Formulario con action de Formspree (sustituye TU_ENDPOINT_AQUI) -->
+    <!-- Formulario con action de Formspree (tu endpoint ya está) -->
     <form id="surveyForm" method="POST" action="https://formspree.io/f/mwvzjkqk">
         <input type="hidden" name="_subject" value="Nueva respuesta Encuesta IIO">
-
         <div id="questionsContainer" class="questions-area"></div>
 
         <div class="open-question">
@@ -276,6 +330,7 @@
         </div>
     </form>
 
+    <!-- El pie de página está comentado en tu original, lo dejo así -->
     <!-- <div class="footnote">
         🔍 Datos anónimos con fines académicos. Al enviar, recibirás un resumen y los datos llegarán al investigador.
     </div> -->
@@ -283,7 +338,7 @@
 <div id="toastMsg" class="toast-msg"></div>
 
 <script>
-    // ---------- 22 PREGUNTAS ----------
+    // ---------- 22 PREGUNTAS (sin cambios) ----------
     const questionsList = [
         "Existe una brecha de comunicación entre el equipo de TI y los gerentes de procesos.",
         "Los proyectos de informatización se enfocan más en la herramienta que en el flujo de trabajo.",
@@ -309,7 +364,7 @@
         "Una carrera que una gestión, procesos e informática resolvería problemas actuales."
     ];
 
-    // Función para capitalizar cada palabra (primera letra mayúscula, resto minúsculas)
+    // Función para capitalizar cada palabra
     function toTitleCase(str) {
         return str.toLowerCase().split(' ').map(word => {
             if (word.length === 0) return word;
@@ -317,43 +372,22 @@
         }).join(' ');
     }
 
-    // Validar que el nombre solo contenga letras, espacios y algunos acentos básicos (opcional)
+    // Validar nombre (solo letras, espacios, acentos, ñ)
     function isValidName(name) {
-        // Permite letras (incluyendo acentos), espacios y guiones (opcional)
-        // Si quieres solo letras sin acentos, usa /^[A-Za-z\s]+$/
         const regex = /^[A-Za-záéíóúüñÁÉÍÓÚÜÑ\s]+$/;
         return regex.test(name);
     }
 
-    // Formatear y validar en tiempo real
     const nombreInput = document.getElementById('nombreCompleto');
     const errorDiv = document.getElementById('errorNombre');
-
-    function formatAndValidate() {
-        let value = nombreInput.value;
-        // Eliminar espacios múltiples al inicio/final y reducir espacios entre palabras
-        value = value.trim().replace(/\s+/g, ' ');
-        // Validar caracteres
-        if (value && !isValidName(value)) {
-            errorDiv.style.display = 'block';
-            nombreInput.style.borderColor = '#d32f2f';
-        } else {
-            errorDiv.style.display = 'none';
-            nombreInput.style.borderColor = '#cbdbe0';
-        }
-        // Aplicar formato título (sin forzar mientras escribe, pero al salir del campo)
-        return value;
-    }
 
     nombreInput.addEventListener('blur', function() {
         let value = this.value.trim();
         if (value) {
             if (!isValidName(value)) {
-                // Si es inválido, mostramos error y no aplicamos formato
                 errorDiv.style.display = 'block';
                 this.style.borderColor = '#d32f2f';
             } else {
-                // Aplicar título
                 this.value = toTitleCase(value);
                 errorDiv.style.display = 'none';
                 this.style.borderColor = '#cbdbe0';
@@ -364,7 +398,6 @@
         }
     });
 
-    // También al escribir, ocultar error cuando se empiece a corregir
     nombreInput.addEventListener('input', function() {
         let val = this.value;
         if (val && !isValidName(val)) {
@@ -376,7 +409,7 @@
         }
     });
 
-    // Renderizar preguntas con nombres numéricos
+    // Renderizar preguntas
     function renderQuestions() {
         const container = document.getElementById('questionsContainer');
         container.innerHTML = '';
@@ -408,7 +441,6 @@
         });
     }
 
-    // Recoger respuestas (incluyendo nombre)
     function collectAnswers() {
         const answers = {};
         let answered = 0;
@@ -438,7 +470,6 @@
         setTimeout(() => t.style.opacity = 0, 3000);
     }
 
-    // Manejar envío: validar nombre (si se ingresó, debe ser válido)
     const form = document.getElementById('surveyForm');
     form.addEventListener('submit', function(event) {
         const nombreVal = nombreInput.value.trim();
@@ -467,7 +498,6 @@
         // El formulario se envía normalmente a Formspree
     });
 
-    // Limpiar formulario
     document.getElementById('resetBtn').addEventListener('click', () => {
         for (let i = 1; i <= questionsList.length; i++) {
             document.getElementsByName(`pregunta_${i}`).forEach(r => r.checked = false);
@@ -479,7 +509,6 @@
         showToast("Formulario limpiado");
     });
 
-    // Auto-guardado y restauración
     function autoSave() {
         const data = collectAnswers();
         localStorage.setItem('encuestaIIO_backup', JSON.stringify(data));
